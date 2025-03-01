@@ -7,3 +7,18 @@
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
+User.destroy_all
+
+User.create!(
+  email: "orce@orce.com",
+  password: "123456",
+  jti: SecureRandom.uuid
+)
+
+Post.destroy_all
+
+Post.create!(
+  title: "First Post",
+  body: "This is the first post in the database.",
+  user: User.first
+)

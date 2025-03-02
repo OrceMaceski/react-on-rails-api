@@ -30,3 +30,10 @@
 
 # Ignore master key for decrypting credentials and more.
 /config/master.key
+/frontend/node_modules
+/frontend/yarn-error.log
+/frontend/.yarn-integrity
+/frontend/.yarn-metadata
+/frontend/.yarnrc
+/frontend/.yarnrc.yml
+/frontend/.yarn

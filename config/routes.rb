@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get "validate_token", to: "authentication#validate_token"
   resources :posts
   devise_for :users, path: "", path_names: {
     sign_in: "login",

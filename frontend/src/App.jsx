@@ -1,27 +1,36 @@
-import { Routes, Route } from 'react-router-dom'
-import Navbar from './components/Navbar'
-import Hero from './components/Hero'
-import Footer from './components/Footer'
-import Home from './components/Home'
-import About from './components/About'
-import Login from './components/Login'
-import Signup from './components/Signup'
-import Posts from './components/posts/Posts'
-import CreatePost from './components/posts/CreatePost'
-import EditPost from './components/posts/EditPost'
-import PostDetails from './components/posts/PostDetails'
-import { useAuth } from './contexts/AuthContext'
-import { Navigate } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom';
+import Navbar from './components/Navbar';
+import Hero from './components/Hero';
+import Footer from './components/Footer';
+import Home from './components/Home';
+import About from './components/About';
+import Login from './components/Login';
+import Signup from './components/Signup';
+import Posts from './components/posts/Posts';
+import CreatePost from './components/posts/CreatePost';
+import EditPost from './components/posts/EditPost';
+import PostDetails from './components/posts/PostDetails';
+import { useAuth } from './contexts/AuthContext';
+import { Navigate } from 'react-router-dom';
 
 function App() {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, loading } = useAuth();
 
   // Protected route component
   const ProtectedRoute = ({ children }) => {
-    if (!isAuthenticated) {
-      return <Navigate to="/login" />
+    if (loading) {
+      return <div>Loading...</div>; // Show a loading spinner or message
     }
-    return children
+
+    if (!isAuthenticated) {
+      return <Navigate to="/login" />;
+    }
+
+    return children;
+  };
+
+  if (loading) {
+    return <div>Loading...</div>; // Show a loading spinner or message while checking auth
   }
 
   return (
@@ -70,7 +79,7 @@ function App() {
       </main>
       <Footer />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

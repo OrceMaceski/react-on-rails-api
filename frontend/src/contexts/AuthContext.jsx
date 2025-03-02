@@ -41,7 +41,7 @@ export const AuthProvider = ({ children }) => {
       const data = await loginUser(email, password)
 
       const token = data?.status?.token  // Adjust if needed
-      console.log('Login TOKEN or USER:', data.status)  // Check the token
+      // console.log('Login TOKEN or USER:', data.status)  // Check the token
       localStorage.setItem('token', token)
 
       setIsAuthenticated(true)

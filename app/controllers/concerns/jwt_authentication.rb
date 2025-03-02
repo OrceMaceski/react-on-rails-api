@@ -40,7 +40,7 @@ module JwtAuthentication
   end
 
   def authenticate_user!
-    render json: { error: "Not authenticated" }, status: :unauthorized unless current_user.authenticated?
+    render json: { error: "Not authenticated" }, status: :unauthorized unless current_user
   end
 
   def valid_token_format?(token)

@@ -1,18 +1,20 @@
 import { createContext, useState, useContext, useEffect } from 'react';
-import { loginUser, signupUser, logoutUser, validateToken } from '../services/auth'; // Import validateToken
+import { loginUser, signupUser, logoutUser, validateToken } from '../services/auth';
 
 const AuthContext = createContext();
 
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
+  const [currentUser, setCurrentUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(true); // Add loading state
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const checkAuth = async () => {
       const token = localStorage.getItem('token');
+      const user = localStorage.getItem('user');
 
       if (token) {
         try {
@@ -21,20 +23,23 @@ export const AuthProvider = ({ children }) => {
           if (isValid) {
             setIsAuthenticated(true);
           } else {
-            // If the token is invalid, clear it
             localStorage.removeItem('token');
             setIsAuthenticated(false);
+            localStorage.removeItem('user');
+            setCurrentUser(null);
           }
         } catch (err) {
           console.error('Token validation failed:', err);
           localStorage.removeItem('token');
           setIsAuthenticated(false);
+          localStorage.removeItem('user');
+          setCurrentUser(null);
         }
       } else {
         setIsAuthenticated(false);
       }
 
-      setLoading(false); // Set loading to false once the check is complete
+      setLoading(false);
     };
 
     checkAuth();
@@ -45,8 +50,11 @@ export const AuthProvider = ({ children }) => {
     try {
       const data = await loginUser(email, password);
       const token = data?.status?.token;
+      const user = data?.status?.data?.user;
       localStorage.setItem('token', token);
       setIsAuthenticated(true);
+      localStorage.setItem('user', user);
+      setCurrentUser(user);
       return { success: true };
     } catch (err) {
       setError(err.message || 'Failed to login');
@@ -58,8 +66,7 @@ export const AuthProvider = ({ children }) => {
     setError(null);
     try {
       const data = await signupUser(email, password, password_confirmation);
-      localStorage.setItem('token', data.token);
-      setIsAuthenticated(true);
+      setIsAuthenticated(false);
       return { success: true };
     } catch (err) {
       setError(err.message || 'Failed to signup');
@@ -72,6 +79,8 @@ export const AuthProvider = ({ children }) => {
       await logoutUser();
       localStorage.removeItem('token');
       setIsAuthenticated(false);
+      localStorage.removeItem('user');
+      setCurrentUser(null);
       return { success: true };
     } catch (err) {
       return { success: false, error: err.message };
@@ -79,8 +88,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   const value = {
+    currentUser,
     isAuthenticated,
-    loading, // Include loading in the context value
+    loading,
     error,
     login,
     signup,

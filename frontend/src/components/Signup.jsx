@@ -28,7 +28,7 @@ function Signup() {
       const result = await signup(email, password, passwordConfirmation)
 
       if (result.success) {
-        navigate('/posts')
+        navigate('/login')
       } else {
         setError(result.error || 'Failed to create account')
       }

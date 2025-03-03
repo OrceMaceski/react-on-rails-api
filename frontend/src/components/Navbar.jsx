@@ -12,7 +12,7 @@ function Navbar() {
     <nav className="bg-blue-600 text-white p-4">
       <div className="container mx-auto flex justify-between items-center">
         <div className="text-xl font-bold">
-          <Link to="/">Rails React</Link>
+          <Link to="/">React on Rails</Link>
         </div>
         <div className="space-x-4">
           <Link to="/" className="hover:text-blue-200">Home</Link>

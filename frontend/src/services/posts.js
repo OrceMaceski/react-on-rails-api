@@ -32,12 +32,17 @@ export const createPost = async (postData) => {
 }
 
 export const updatePost = async (id, postData) => {
-  try {
-    const response = await api.put(`/posts/${id}`, { post: postData })
-    return response.data
-  } catch (error) {
-    throw new Error(error.response?.data?.error || 'Failed to update post')
+  // If postData is a FormData object, use content type for file upload
+  if (postData instanceof FormData) {
+    return await api.put(`/posts/${id}`, postData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
   }
+
+  // Regular JSON update if not a file upload
+  return await api.put(`/posts/${id}`, postData)
 }
 
 export const deletePost = async (id) => {

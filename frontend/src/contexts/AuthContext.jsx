@@ -18,33 +18,32 @@ export const AuthProvider = ({ children }) => {
 
       if (token) {
         try {
-          // Validate the token with the backend
           const isValid = await validateToken(token);
           if (isValid) {
             setIsAuthenticated(true);
-            setCurrentUser(user);
+            setCurrentUser(user ? JSON.parse(user) : null);
           } else {
-            localStorage.removeItem('token');
-            setIsAuthenticated(false);
-            localStorage.removeItem('user');
-            setCurrentUser(null);
+            handleLogout();
           }
         } catch (err) {
           console.error('Token validation failed:', err);
-          localStorage.removeItem('token');
-          setIsAuthenticated(false);
-          localStorage.removeItem('user');
-          setCurrentUser(null);
+          handleLogout();
         }
       } else {
         setIsAuthenticated(false);
       }
-
       setLoading(false);
     };
 
     checkAuth();
   }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setIsAuthenticated(false);
+    setCurrentUser(null);
+  };
 
   const login = async (email, password) => {
     setError(null);
@@ -53,11 +52,15 @@ export const AuthProvider = ({ children }) => {
       const token = data?.status?.token;
       const user = data?.status?.data?.user;
 
-      localStorage.setItem('token', token);
-      setIsAuthenticated(true);
-      localStorage.setItem('user', JSON.stringify(user));
-      setCurrentUser(user);
-      return { success: true };
+      if (token && user) {
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(user));
+        setIsAuthenticated(true);
+        setCurrentUser(user);
+        return { success: true };
+      } else {
+        throw new Error('Invalid login response');
+      }
     } catch (err) {
       setError(err.message || 'Failed to login');
       return { success: false, error: err.message };
@@ -67,8 +70,7 @@ export const AuthProvider = ({ children }) => {
   const signup = async (email, password, password_confirmation) => {
     setError(null);
     try {
-      const data = await signupUser(email, password, password_confirmation);
-      setIsAuthenticated(false);
+      await signupUser(email, password, password_confirmation);
       return { success: true };
     } catch (err) {
       setError(err.message || 'Failed to signup');
@@ -79,13 +81,10 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       await logoutUser();
-      localStorage.removeItem('token');
-      setIsAuthenticated(false);
-      localStorage.removeItem('user');
-      setCurrentUser(null);
-      return { success: true };
     } catch (err) {
-      return { success: false, error: err.message };
+      console.error('Logout failed:', err);
+    } finally {
+      handleLogout();
     }
   };
 

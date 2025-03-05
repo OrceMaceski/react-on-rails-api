@@ -45,7 +45,7 @@ function PostDetails() {
 
   if (!post) return <div className="text-center py-10">Post not found</div>
 
-  const isAuthor = currentUser && JSON.parse(currentUser).id === post.user_id
+  const isAuthor = currentUser && currentUser.id === post.user_id
 
   return (
     <div className="max-w-3xl mx-auto py-8">

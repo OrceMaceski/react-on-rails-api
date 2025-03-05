@@ -20,7 +20,11 @@ export const getPost = async (id) => {
 
 export const createPost = async (postData) => {
   try {
-    const response = await api.post('/posts', { post: postData })
+    const response = await api.post('/posts', postData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
     return response.data
   } catch (error) {
     throw new Error(error.response?.data?.error || 'Failed to create post')

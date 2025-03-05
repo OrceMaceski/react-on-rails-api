@@ -5,9 +5,40 @@ import { createPost } from '../../services/posts'
 function CreatePost() {
   const [title, setTitle] = useState('')
   const [body, setBody] = useState('')
+  const [image, setImage] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [imagePreview, setImagePreview] = useState(null)
   const navigate = useNavigate()
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0]
+
+    if (file) {
+      const validTypes = ['image/jpeg', 'image/png', 'image/gif']
+      const maxSize = 5 * 1024 * 1024 // 5MB
+
+      if (!validTypes.includes(file.type)) {
+        setError('Invalid file type. Please upload a JPEG, PNG, or GIF.')
+        return
+      }
+
+      if (file.size > maxSize) {
+        setError('File is too large. Maximum size is 5MB.')
+        return
+      }
+
+      setImage(file)
+
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setImagePreview(reader.result)
+      }
+      reader.readAsDataURL(file)
+
+      setError(null)
+    }
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -18,11 +49,20 @@ function CreatePost() {
 
     try {
       setLoading(true)
-      await createPost({ title, body })
+
+      const formData = new FormData()
+      formData.append('post[title]', title)
+      formData.append('post[body]', body)
+
+      if (image) {
+        formData.append('post[image]', image)
+      }
+
+
+      await createPost(formData)
       navigate('/posts')
     } catch (err) {
-      setError('Failed to create post')
-      console.error(err)
+      setError(err.message || 'Failed to create post')
     } finally {
       setLoading(false)
     }
@@ -67,6 +107,29 @@ function CreatePost() {
             rows="10"
             required
           />
+        </div>
+
+        <div className="mb-6">
+          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="image">
+            Post Image (Optional)
+          </label>
+          <input
+            id="image"
+            type="file"
+            accept="image/jpeg,image/png,image/gif"
+            onChange={handleImageChange}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          />
+
+          {imagePreview && (
+            <div className="mt-4">
+              <img
+                src={imagePreview}
+                alt="Preview"
+                className="max-w-full h-auto max-h-64 object-cover rounded"
+              />
+            </div>
+          )}
         </div>
 
         <div className="flex items-center justify-between">

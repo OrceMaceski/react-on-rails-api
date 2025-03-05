@@ -45,7 +45,7 @@ function PostDetails() {
 
   if (!post) return <div className="text-center py-10">Post not found</div>
 
-  const isAuthor = currentUser && currentUser.id === post.user_id
+  const isAuthor = currentUser && JSON.parse(currentUser).id === post.user_id
 
   return (
     <div className="max-w-3xl mx-auto py-8">
@@ -55,6 +55,17 @@ function PostDetails() {
 
       <div className="bg-white rounded-lg shadow-md p-6 mt-4">
         <h1 className="text-3xl font-bold mb-4">{post.title}</h1>
+
+        {/* Display image if available */}
+        {post.image_url && (
+          <div className="mb-6">
+            <img
+              src={post.image_url}
+              alt={post.title}
+              className="w-full h-auto max-h-96 object-cover rounded-lg mb-4"
+            />
+          </div>
+        )}
 
         <div className="prose max-w-none">
           <p className="whitespace-pre-line">{post.body}</p>

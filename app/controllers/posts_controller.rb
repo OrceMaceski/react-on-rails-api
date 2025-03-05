@@ -12,14 +12,13 @@ class PostsController < ApplicationController
 
   # GET /posts/1
   def show
-    render json: @post
+    render json: PostSerializer.new(@post).serializable_hash[:data][:attributes]
   end
 
   # POST /posts
   def create
     @post = Post.new(post_params)
     @post.user = current_user
-
     if @post.save
       render json: @post, status: :created, location: @post
     else
@@ -49,6 +48,6 @@ class PostsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def post_params
-      params.expect(post: [ :title, :body ])
+      params.expect(post: [ :title, :body, :image ])
     end
 end

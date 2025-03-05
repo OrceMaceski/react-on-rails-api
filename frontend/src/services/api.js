@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const API_URL = 'http://localhost:3000' // Change this to your Rails API URL
+const API_URL = 'http://localhost:3000'
 
 const api = axios.create({
   baseURL: API_URL,
@@ -20,5 +20,16 @@ api.interceptors.request.use(
   },
   (error) => Promise.reject(error)
 )
+
+// Add a method to handle multipart form data
+api.postForm = async (url, data, config = {}) => {
+  return api.post(url, data, {
+    ...config,
+    headers: {
+      ...config.headers,
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+}
 
 export default api

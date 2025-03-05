@@ -22,6 +22,7 @@ export const AuthProvider = ({ children }) => {
           const isValid = await validateToken(token);
           if (isValid) {
             setIsAuthenticated(true);
+            setCurrentUser(user);
           } else {
             localStorage.removeItem('token');
             setIsAuthenticated(false);
@@ -51,9 +52,10 @@ export const AuthProvider = ({ children }) => {
       const data = await loginUser(email, password);
       const token = data?.status?.token;
       const user = data?.status?.data?.user;
+
       localStorage.setItem('token', token);
       setIsAuthenticated(true);
-      localStorage.setItem('user', user);
+      localStorage.setItem('user', JSON.stringify(user));
       setCurrentUser(user);
       return { success: true };
     } catch (err) {

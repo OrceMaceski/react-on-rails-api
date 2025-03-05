@@ -4,7 +4,7 @@ import { useAuth } from '../../contexts/AuthContext'
 
 function PostItem({ post, onPostDeleted }) {
   const { currentUser } = useAuth()
-  const isAuthor = currentUser && currentUser.id === post.user_id
+  const isAuthor = currentUser && JSON.parse(currentUser).id === post.user_id
 
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this post?')) {

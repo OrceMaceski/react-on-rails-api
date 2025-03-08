@@ -17,8 +17,12 @@ User.create!(
 
 Post.destroy_all
 
-Post.create!(
-  title: "First Post",
-  body: "This is the first post in the database.",
-  user: User.first
-)
+30.times do
+  Post.create!(
+    title: Faker::Book.title,
+    body: Faker::Lorem.paragraphs(number: 10).join("\n"),
+    user: User.first
+  )
+end
+
+puts "Posts created!"

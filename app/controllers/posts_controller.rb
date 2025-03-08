@@ -1,13 +1,16 @@
+require "pagy/extras/metadata"
 class PostsController < ApplicationController
+  include Pagy::Backend
+
   before_action :authenticate_user!
   before_action :set_post, only: %i[ show update destroy ]
 
   # GET /posts
   def index
-    # @posts = Post.all
-    @posts = current_user.posts
+    user_posts = current_user.posts
+    @pagy, @posts = pagy(user_posts, limit: 4)
 
-    render json: @posts
+    render json: { data: @posts, pagy: pagy_metadata(@pagy) }
   end
 
   # GET /posts/1

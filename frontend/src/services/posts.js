@@ -1,8 +1,8 @@
 import api from './api'
 
-export const getPosts = async () => {
+export const getPosts = async (page = 1) => {
   try {
-    const response = await api.get('/posts')
+    const response = await api.get(`/posts?page=${page}`)
     return response.data
   } catch (error) {
     throw new Error(error.response?.data?.error || 'Failed to fetch posts')

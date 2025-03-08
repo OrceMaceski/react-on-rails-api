@@ -44,8 +44,11 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+  gem "faker", git: "https://github.com/faker-ruby/faker.git", branch: "main"
 end
 
 gem "devise"
 gem "devise-jwt"
 gem "jsonapi-serializer"
+
+gem "pagy"

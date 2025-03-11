@@ -8,6 +8,7 @@ function EditPost() {
   const [body, setBody] = useState('')
   const [image, setImage] = useState(null)
   const [currentImage, setCurrentImage] = useState(null)
+  const [removeImage, setRemoveImage] = useState(false)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState(null)
@@ -40,6 +41,7 @@ function EditPost() {
       // Preview the selected image
       setImage(selectedImage)
       setCurrentImage(URL.createObjectURL(selectedImage))
+      setRemoveImage(false)  // Reset remove flag if a new image is selected
     }
   }
 
@@ -63,6 +65,11 @@ function EditPost() {
         formData.append('post[image]', image)
       }
 
+      // Add flag to remove image if removeImage is true
+      if (removeImage) {
+        formData.append('post[remove_image]', 'true')
+      }
+
       await updatePost(id, formData)
       navigate(`/posts/${id}`)
     } catch (err) {
@@ -76,10 +83,7 @@ function EditPost() {
   const handleRemoveImage = () => {
     setImage(null)
     setCurrentImage(null)
-
-    // If you want to explicitly remove the image on the backend
-    // You might need to add a separate method in your posts service
-    // updatePost(id, { remove_image: true })
+    setRemoveImage(true)  // Set the flag to indicate image should be removed
   }
 
   if (loading) return <div>Loading post...</div>
@@ -137,7 +141,7 @@ function EditPost() {
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           />
 
-          {currentImage && (
+          {currentImage && !removeImage && (
             <div className="mt-4 relative">
               <img
                 src={currentImage}

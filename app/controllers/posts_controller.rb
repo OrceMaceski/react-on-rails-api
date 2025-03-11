@@ -31,7 +31,12 @@ class PostsController < ApplicationController
 
   # PATCH/PUT /posts/1
   def update
-    if @post.update(post_params)
+    # Handle image removal if requested
+    if params.dig(:post, :remove_image) == "true" && @post.image.attached?
+      @post.image.purge
+    end
+
+    if @post.update(post_params.except(:remove_image))
       render json: @post
     else
       render json: @post.errors, status: :unprocessable_entity
@@ -51,6 +56,6 @@ class PostsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def post_params
-      params.expect(post: [ :title, :body, :image ])
+      params.expect(post: [ :title, :body, :image, :remove_image ])
     end
 end

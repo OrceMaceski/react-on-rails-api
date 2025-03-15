@@ -52,3 +52,5 @@ gem "devise-jwt"
 gem "jsonapi-serializer"
 
 gem "pagy"
+
+gem "sidekiq"

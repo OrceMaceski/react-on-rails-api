@@ -88,5 +88,5 @@ Rails.application.configure do
   config.active_storage.service_urls_expire_in = 1.hour
   config.active_storage.resolve_model_to_route = :rails_storage_redirect
   config.active_storage.default_url_options = { host: Rails.application.credentials.dig(:host) }
-  config.routes.default_url_options[:host] = Rails.application.credentials.dig(:host)
+  Rails.application.routes.default_url_options[:host] = Rails.application.credentials.dig(:host)
 end

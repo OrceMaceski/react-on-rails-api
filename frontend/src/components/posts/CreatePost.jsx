@@ -7,7 +7,7 @@ function CreatePost() {
   const [body, setBody] = useState('')
   const [image, setImage] = useState(null)
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
+  const [errors, setErrors] = useState([])
   const [imagePreview, setImagePreview] = useState(null)
   const navigate = useNavigate()
 
@@ -19,12 +19,12 @@ function CreatePost() {
       const maxSize = 5 * 1024 * 1024 // 5MB
 
       if (!validTypes.includes(file.type)) {
-        setError('Invalid file type. Please upload a JPEG, PNG, or GIF.')
+        setErrors(['Invalid file type. Please upload a JPEG, PNG, or GIF.'])
         return
       }
 
       if (file.size > maxSize) {
-        setError('File is too large. Maximum size is 5MB.')
+        setErrors(['File is too large. Maximum size is 5MB.'])
         return
       }
 
@@ -36,7 +36,7 @@ function CreatePost() {
       }
       reader.readAsDataURL(file)
 
-      setError(null)
+      setErrors([])
     }
   }
 
@@ -44,11 +44,12 @@ function CreatePost() {
     e.preventDefault()
 
     if (!title || !body) {
-      return setError('Please fill in all fields')
+      return setErrors(['Please fill in all required fields'])
     }
 
     try {
       setLoading(true)
+      setErrors([])
 
       const formData = new FormData()
       formData.append('post[title]', title)
@@ -58,11 +59,14 @@ function CreatePost() {
         formData.append('post[image]', image)
       }
 
-
       await createPost(formData)
       navigate('/posts')
     } catch (err) {
-      setError(err.message || 'Failed to create post')
+      if (Array.isArray(err)) {
+        setErrors(err)
+      } else {
+        setErrors([err.message || 'Failed to create post'])
+      }
     } finally {
       setLoading(false)
     }
@@ -72,9 +76,13 @@ function CreatePost() {
     <div className="max-w-3xl mx-auto py-8">
       <h1 className="text-2xl font-bold mb-6">Create New Post</h1>
 
-      {error && (
+      {errors.length > 0 && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-          {error}
+          <ul className="list-disc pl-5">
+            {errors.map((error, index) => (
+              <li key={index}>{error}</li>
+            ))}
+          </ul>
         </div>
       )}
 

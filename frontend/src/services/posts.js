@@ -27,12 +27,29 @@ export const createPost = async (postData) => {
     })
     return response.data
   } catch (error) {
+    if (error.response?.data && typeof error.response.data === 'object') {
+      const formattedErrors = []
+
+      Object.entries(error.response.data).forEach(([field, messages]) => {
+        if (Array.isArray(messages)) {
+          messages.forEach(message => {
+            formattedErrors.push(`${field} ${message}`)
+          })
+        } else if (typeof messages === 'string') {
+          formattedErrors.push(`${field} ${messages}`)
+        }
+      })
+
+      if (formattedErrors.length > 0) {
+        throw formattedErrors
+      }
+    }
+
     throw new Error(error.response?.data?.error || 'Failed to create post')
   }
 }
 
 export const updatePost = async (id, postData) => {
-  // If postData is a FormData object, use content type for file upload
   if (postData instanceof FormData) {
     return await api.put(`/posts/${id}`, postData, {
       headers: {
@@ -41,7 +58,6 @@ export const updatePost = async (id, postData) => {
     })
   }
 
-  // Regular JSON update if not a file upload
   return await api.put(`/posts/${id}`, postData)
 }
 

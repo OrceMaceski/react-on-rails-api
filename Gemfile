@@ -44,6 +44,9 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+
+  # Memory profiling
+  gem "memory_profiler", require: false
 end
 gem "faker", git: "https://github.com/faker-ruby/faker.git", branch: "main"
 
